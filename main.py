@@ -163,5 +163,121 @@ class AsesoriaEspecializada(Servicio):
 
         return self.precio_base * cantidad
 
+# =====================================================
+# EXCEPCIONES PERSONALIZADAS
+# =====================================================
+
+class ReservaInvalidaError(Exception):
+    """Error cuando una reserva no cumple los requisitos."""
+    pass
+
+
+class OperacionNoPermitidaError(Exception):
+    """Error cuando se intenta realizar una operación no permitida."""
+    pass
+
+
+# =====================================================
+# CLASE RESERVA
+# =====================================================
+
+class Reserva:
+
+    def __init__(self, codigo, cliente, servicio, duracion):
+        try:
+            if not isinstance(cliente, Cliente):
+                raise ReservaInvalidaError("El cliente no es válido.")
+
+            if not isinstance(servicio, Servicio):
+                raise ReservaInvalidaError("El servicio no es válido.")
+
+            if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or duracion <= 0:
+                raise ReservaInvalidaError("La duración debe ser mayor que cero.")
+
+            self.codigo = codigo
+            self.cliente = cliente
+            self.servicio = servicio
+            self.duracion = duracion
+            self.estado = "Pendiente"
+
+            logging.info("Reserva creada: %s", codigo)
+
+        except ReservaInvalidaError as error:
+            logging.error("Error al crear reserva: %s", error)
+            raise
+
+    # Cálculo del costo con impuestos y descuentos opcionales
+    def calcular_total(self, impuesto=0, descuento=0):
+        if not isinstance(impuesto, (int, float)) or not 0 <= impuesto <= 100:
+            raise ValueError("El impuesto debe estar entre 0 y 100.")
+
+        if not isinstance(descuento, (int, float)) or not 0 <= descuento <= 100:
+            raise ValueError("El descuento debe estar entre 0 y 100.")
+
+        subtotal = self.servicio.calcular_costo(self.duracion)
+        valor_descuento = subtotal * descuento / 100
+        valor_con_descuento = subtotal - valor_descuento
+        total = valor_con_descuento * (1 + impuesto / 100)
+
+        return round(total, 2)
+
+    # Confirmación de la reserva
+    def confirmar(self):
+        try:
+            if self.estado != "Pendiente":
+                raise OperacionNoPermitidaError(
+                    "Solo se pueden confirmar reservas pendientes."
+                )
+
+            self.estado = "Confirmada"
+            logging.info("Reserva %s confirmada.", self.codigo)
+            print(f"Reserva {self.codigo} confirmada correctamente.")
+
+        except OperacionNoPermitidaError as error:
+            logging.error("Error al confirmar reserva: %s", error)
+            raise
+
+    # Cancelación de la reserva
+    def cancelar(self):
+        try:
+            if self.estado != "Pendiente":
+                raise OperacionNoPermitidaError(
+                    "No se puede cancelar una reserva que no esté pendiente."
+                )
+
+            self.estado = "Cancelada"
+            logging.info("Reserva %s cancelada.", self.codigo)
+            print(f"Reserva {self.codigo} cancelada correctamente.")
+
+        except OperacionNoPermitidaError as error:
+            logging.error("Error al cancelar reserva: %s", error)
+            raise
+
+    # Procesamiento de la reserva
+    def procesar(self):
+        try:
+            total = self.calcular_total(impuesto=19, descuento=0)
+
+            if self.estado != "Pendiente":
+                raise OperacionNoPermitidaError(
+                    "La reserva ya fue procesada."
+                )
+
+        except Exception as error:
+            logging.error("Error durante el procesamiento: %s", error)
+            raise ReservaInvalidaError(
+                "No fue posible procesar la reserva."
+            ) from error
+
+        else:
+            self.confirmar()
+            print(f"Valor total de la reserva: ${total:,.2f}")
+
+        finally:
+            logging.info(
+                "Finalizó el intento de procesamiento de la reserva %s.",
+                self.codigo
+            )
+
     def describir_servicio(self):
         return "Servicio de asesorías especializadas por horas."
