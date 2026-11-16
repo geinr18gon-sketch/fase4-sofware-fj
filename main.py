@@ -433,4 +433,3 @@ logging.info("Finalizaron las 10 operaciones de prueba.")
 
 # Mostrar resumen de las listas internas
 sistema.mostrar_resumen()
-print("FIN DEL PROGRAMA")
