@@ -320,10 +320,13 @@ class SistemaGestion:
         print("Servicios registrados:", len(self.servicios))
         print("Reservas registradas:", len(self.reservas))
 
+
 # =====================================================
 # PRUEBAS DE FUNCIONAMIENTO DEL SISTEMA
 # Mínimo 10 operaciones
 # =====================================================
+
+sistema = SistemaGestion()
 
 print("\n" + "=" * 55)
 print("       PRUEBAS DEL SISTEMA SOFTWARE FJ")
@@ -337,6 +340,7 @@ try:
         "carlos@gmail.com",
         "3101234567"
     )
+    sistema.registrar_cliente(cliente1)
     print("\n1. Cliente registrado correctamente.")
     print(cliente1.mostrar_informacion())
 except Exception as error:
@@ -356,6 +360,7 @@ except ValueError as error:
 # OPERACIÓN 3: Creación de servicio de sala
 try:
     sala = ReservaSala("S01", "Sala de reuniones", 50000)
+    sistema.registrar_servicio(sala)
     print("\n3. Servicio creado:", sala.describir_servicio())
 except Exception as error:
     print("3. Error:", error)
@@ -363,6 +368,7 @@ except Exception as error:
 # OPERACIÓN 4: Creación de servicio de equipos
 try:
     equipos = AlquilerEquipos("E01", "Alquiler de computadores", 30000)
+    sistema.registrar_servicio(equipos)
     print("\n4. Servicio creado:", equipos.describir_servicio())
 except Exception as error:
     print("4. Error:", error)
@@ -372,6 +378,7 @@ try:
     asesoria = AsesoriaEspecializada(
         "A01", "Asesoría informática", 80000
     )
+    sistema.registrar_servicio(asesoria)
     print("\n5. Servicio creado:", asesoria.describir_servicio())
 except Exception as error:
     print("5. Error:", error)
@@ -394,6 +401,7 @@ except Exception as error:
 # OPERACIÓN 8: Creación y procesamiento de una reserva
 try:
     reserva1 = Reserva("R001", cliente1, sala, 2)
+    sistema.registrar_reserva(reserva1)
     print("\n8. Reserva creada correctamente.")
     reserva1.procesar()
 except Exception as error:
@@ -408,6 +416,7 @@ except ReservaInvalidaError as error:
 # OPERACIÓN 10: Cancelación de una reserva pendiente
 try:
     reserva2 = Reserva("R003", cliente1, equipos, 2)
+    sistema.registrar_reserva(reserva2)
     reserva2.cancelar()
     print("\n10. Reserva cancelada correctamente.")
 except Exception as error:
@@ -421,3 +430,6 @@ print("Los errores controlados fueron registrados en los logs.")
 print("=" * 55)
 
 logging.info("Finalizaron las 10 operaciones de prueba.")
+
+# Mostrar resumen de las listas internas
+sistema.mostrar_resumen()
