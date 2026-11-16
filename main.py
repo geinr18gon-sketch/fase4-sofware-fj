@@ -21,4 +21,3 @@ print("=" * 55)
 print("       SISTEMA INTEGRAL DE GESTIÓN SOFTWARE FJ")
 print("=" * 55)
 print("Sistema iniciado correctamente.")
-
