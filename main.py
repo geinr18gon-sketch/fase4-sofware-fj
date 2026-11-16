@@ -279,5 +279,107 @@ class Reserva:
                 self.codigo
             )
 
+# =====================================================
+# PRUEBAS DE FUNCIONAMIENTO DEL SISTEMA
+# Mínimo 10 operaciones
+# =====================================================
+
+print("\n" + "=" * 55)
+print("       PRUEBAS DEL SISTEMA SOFTWARE FJ")
+print("=" * 55)
+
+# OPERACIÓN 1: Registro de un cliente válido
+try:
+    cliente1 = Cliente(
+        "1001",
+        "Carlos Pérez",
+        "carlos@gmail.com",
+        "3101234567"
+    )
+    print("\n1. Cliente registrado correctamente.")
+    print(cliente1.mostrar_informacion())
+except Exception as error:
+    print("1. Error:", error)
+
+# OPERACIÓN 2: Intento de registro de cliente inválido
+try:
+    cliente_invalido = Cliente(
+        "1002",
+        "",
+        "correoincorrecto",
+        "123"
+    )
+except ValueError as error:
+    print("\n2. Registro inválido controlado:", error)
+
+# OPERACIÓN 3: Creación de servicio de sala
+try:
+    sala = ReservaSala("S01", "Sala de reuniones", 50000)
+    print("\n3. Servicio creado:", sala.describir_servicio())
+except Exception as error:
+    print("3. Error:", error)
+
+# OPERACIÓN 4: Creación de servicio de equipos
+try:
+    equipos = AlquilerEquipos("E01", "Alquiler de computadores", 30000)
+    print("\n4. Servicio creado:", equipos.describir_servicio())
+except Exception as error:
+    print("4. Error:", error)
+
+# OPERACIÓN 5: Creación de servicio de asesoría
+try:
+    asesoria = AsesoriaEspecializada(
+        "A01", "Asesoría informática", 80000
+    )
+    print("\n5. Servicio creado:", asesoria.describir_servicio())
+except Exception as error:
+    print("5. Error:", error)
+
+# OPERACIÓN 6: Intento de crear un servicio con precio inválido
+try:
+    servicio_invalido = ReservaSala(
+        "S02", "Sala inválida", -5000
+    )
+except ValueError as error:
+    print("\n6. Servicio inválido controlado:", error)
+
+# OPERACIÓN 7: Cálculo del costo de un servicio
+try:
+    costo = sala.calcular_costo(2)
+    print("\n7. Costo de reserva de sala por 2 horas: $", costo)
+except Exception as error:
+    print("7. Error:", error)
+
+# OPERACIÓN 8: Creación y procesamiento de una reserva
+try:
+    reserva1 = Reserva("R001", cliente1, sala, 2)
+    print("\n8. Reserva creada correctamente.")
+    reserva1.procesar()
+except Exception as error:
+    print("8. Error:", error)
+
+# OPERACIÓN 9: Intento de crear una reserva inválida
+try:
+    reserva_invalida = Reserva("R002", cliente1, sala, -3)
+except ReservaInvalidaError as error:
+    print("\n9. Reserva inválida controlada:", error)
+
+# OPERACIÓN 10: Cancelación de una reserva pendiente
+try:
+    reserva2 = Reserva("R003", cliente1, equipos, 2)
+    reserva2.cancelar()
+    print("\n10. Reserva cancelada correctamente.")
+except Exception as error:
+    print("10. Error:", error)
+
+# RESUMEN FINAL
+print("\n" + "=" * 55)
+print("PRUEBAS DEL SISTEMA FINALIZADAS")
+print("Se realizaron 10 operaciones de prueba.")
+print("Los errores controlados fueron registrados en los logs.")
+print("=" * 55)
+
+logging.info("Finalizaron las 10 operaciones de prueba.")
+
     def describir_servicio(self):
         return "Servicio de asesorías especializadas por horas."
