@@ -8,9 +8,11 @@
 
 import logging
 from abc import ABC, abstractmethod
-from datetime import datetime
 
-# Configuración del archivo de registro de eventos
+# =====================================================
+# CONFIGURACIÓN DEL SISTEMA DE REGISTRO
+# =====================================================
+
 logging.basicConfig(
     filename="software_fj.log",
     level=logging.INFO,
@@ -37,7 +39,6 @@ class Entidad(ABC):
 
     @abstractmethod
     def mostrar_informacion(self):
-        """Método que deben implementar las clases derivadas."""
         pass
 
 
@@ -59,7 +60,9 @@ class Cliente(Entidad):
                 raise ValueError("El correo electrónico no es válido.")
 
             if not telefono.isdigit() or len(telefono) < 7:
-                raise ValueError("El teléfono debe contener al menos 7 dígitos.")
+                raise ValueError(
+                    "El teléfono debe contener al menos 7 dígitos."
+                )
 
             # Encapsulación de los datos personales
             self.__nombre = nombre.strip()
@@ -92,6 +95,7 @@ class Cliente(Entidad):
             f"Teléfono: {self.__telefono}"
         )
 
+
 # =====================================================
 # CLASE ABSTRACTA: SERVICIO
 # =====================================================
@@ -101,10 +105,18 @@ class Servicio(ABC):
 
     def __init__(self, codigo, nombre, precio_base):
         if not codigo or not nombre:
-            raise ValueError("El código y nombre son obligatorios.")
+            raise ValueError(
+                "El código y nombre son obligatorios."
+            )
 
-        if not isinstance(precio_base, (int, float)) or precio_base <= 0:
-            raise ValueError("El precio debe ser mayor que cero.")
+        if (
+            not isinstance(precio_base, (int, float))
+            or isinstance(precio_base, bool)
+            or precio_base <= 0
+        ):
+            raise ValueError(
+                "El precio debe ser mayor que cero."
+            )
 
         self.codigo = codigo
         self.nombre = nombre
@@ -126,8 +138,14 @@ class Servicio(ABC):
 class ReservaSala(Servicio):
 
     def calcular_costo(self, cantidad):
-        if not isinstance(cantidad, (int, float)) or cantidad <= 0:
-            raise ValueError("La cantidad de horas debe ser positiva.")
+        if (
+            not isinstance(cantidad, (int, float))
+            or isinstance(cantidad, bool)
+            or cantidad <= 0
+        ):
+            raise ValueError(
+                "La cantidad de horas debe ser positiva."
+            )
 
         return self.precio_base * cantidad
 
@@ -142,8 +160,14 @@ class ReservaSala(Servicio):
 class AlquilerEquipos(Servicio):
 
     def calcular_costo(self, cantidad):
-        if not isinstance(cantidad, int) or cantidad <= 0:
-            raise ValueError("La cantidad de equipos debe ser un entero positivo.")
+        if (
+            not isinstance(cantidad, int)
+            or isinstance(cantidad, bool)
+            or cantidad <= 0
+        ):
+            raise ValueError(
+                "La cantidad de equipos debe ser un entero positivo."
+            )
 
         return self.precio_base * cantidad
 
@@ -158,10 +182,20 @@ class AlquilerEquipos(Servicio):
 class AsesoriaEspecializada(Servicio):
 
     def calcular_costo(self, cantidad):
-        if not isinstance(cantidad, (int, float)) or cantidad <= 0:
-            raise ValueError("La duración de la asesoría debe ser positiva.")
+        if (
+            not isinstance(cantidad, (int, float))
+            or isinstance(cantidad, bool)
+            or cantidad <= 0
+        ):
+            raise ValueError(
+                "La duración de la asesoría debe ser positiva."
+            )
 
         return self.precio_base * cantidad
+
+    def describir_servicio(self):
+        return "Servicio de asesorías especializadas por horas."
+
 
 # =====================================================
 # EXCEPCIONES PERSONALIZADAS
@@ -186,13 +220,23 @@ class Reserva:
     def __init__(self, codigo, cliente, servicio, duracion):
         try:
             if not isinstance(cliente, Cliente):
-                raise ReservaInvalidaError("El cliente no es válido.")
+                raise ReservaInvalidaError(
+                    "El cliente no es válido."
+                )
 
             if not isinstance(servicio, Servicio):
-                raise ReservaInvalidaError("El servicio no es válido.")
+                raise ReservaInvalidaError(
+                    "El servicio no es válido."
+                )
 
-            if not isinstance(duracion, (int, float)) or isinstance(duracion, bool) or duracion <= 0:
-                raise ReservaInvalidaError("La duración debe ser mayor que cero.")
+            if (
+                not isinstance(duracion, (int, float))
+                or isinstance(duracion, bool)
+                or duracion <= 0
+            ):
+                raise ReservaInvalidaError(
+                    "La duración debe ser mayor que cero."
+                )
 
             self.codigo = codigo
             self.cliente = cliente
@@ -208,11 +252,24 @@ class Reserva:
 
     # Cálculo del costo con impuestos y descuentos opcionales
     def calcular_total(self, impuesto=0, descuento=0):
-        if not isinstance(impuesto, (int, float)) or not 0 <= impuesto <= 100:
-            raise ValueError("El impuesto debe estar entre 0 y 100.")
 
-        if not isinstance(descuento, (int, float)) or not 0 <= descuento <= 100:
-            raise ValueError("El descuento debe estar entre 0 y 100.")
+        if (
+            not isinstance(impuesto, (int, float))
+            or isinstance(impuesto, bool)
+            or not 0 <= impuesto <= 100
+        ):
+            raise ValueError(
+                "El impuesto debe estar entre 0 y 100."
+            )
+
+        if (
+            not isinstance(descuento, (int, float))
+            or isinstance(descuento, bool)
+            or not 0 <= descuento <= 100
+        ):
+            raise ValueError(
+                "El descuento debe estar entre 0 y 100."
+            )
 
         subtotal = self.servicio.calcular_costo(self.duracion)
         valor_descuento = subtotal * descuento / 100
@@ -230,11 +287,21 @@ class Reserva:
                 )
 
             self.estado = "Confirmada"
-            logging.info("Reserva %s confirmada.", self.codigo)
-            print(f"Reserva {self.codigo} confirmada correctamente.")
+
+            logging.info(
+                "Reserva %s confirmada.",
+                self.codigo
+            )
+
+            print(
+                f"Reserva {self.codigo} confirmada correctamente."
+            )
 
         except OperacionNoPermitidaError as error:
-            logging.error("Error al confirmar reserva: %s", error)
+            logging.error(
+                "Error al confirmar reserva: %s",
+                error
+            )
             raise
 
     # Cancelación de la reserva
@@ -246,17 +313,30 @@ class Reserva:
                 )
 
             self.estado = "Cancelada"
-            logging.info("Reserva %s cancelada.", self.codigo)
-            print(f"Reserva {self.codigo} cancelada correctamente.")
+
+            logging.info(
+                "Reserva %s cancelada.",
+                self.codigo
+            )
+
+            print(
+                f"Reserva {self.codigo} cancelada correctamente."
+            )
 
         except OperacionNoPermitidaError as error:
-            logging.error("Error al cancelar reserva: %s", error)
+            logging.error(
+                "Error al cancelar reserva: %s",
+                error
+            )
             raise
 
     # Procesamiento de la reserva
     def procesar(self):
         try:
-            total = self.calcular_total(impuesto=19, descuento=0)
+            total = self.calcular_total(
+                impuesto=19,
+                descuento=0
+            )
 
             if self.estado != "Pendiente":
                 raise OperacionNoPermitidaError(
@@ -264,14 +344,21 @@ class Reserva:
                 )
 
         except Exception as error:
-            logging.error("Error durante el procesamiento: %s", error)
+            logging.error(
+                "Error durante el procesamiento: %s",
+                error
+            )
+
             raise ReservaInvalidaError(
                 "No fue posible procesar la reserva."
             ) from error
 
         else:
             self.confirmar()
-            print(f"Valor total de la reserva: ${total:,.2f}")
+
+            print(
+                f"Valor total de la reserva: ${total:,.2f}"
+            )
 
         finally:
             logging.info(
@@ -279,14 +366,16 @@ class Reserva:
                 self.codigo
             )
 
+
 # =====================================================
 # PRUEBAS DE FUNCIONAMIENTO DEL SISTEMA
-# Mínimo 10 operaciones
+# MÍNIMO 10 OPERACIONES
 # =====================================================
 
 print("\n" + "=" * 55)
 print("       PRUEBAS DEL SISTEMA SOFTWARE FJ")
 print("=" * 55)
+
 
 # OPERACIÓN 1: Registro de un cliente válido
 try:
@@ -296,10 +385,13 @@ try:
         "carlos@gmail.com",
         "3101234567"
     )
+
     print("\n1. Cliente registrado correctamente.")
     print(cliente1.mostrar_informacion())
+
 except Exception as error:
     print("1. Error:", error)
+
 
 # OPERACIÓN 2: Intento de registro de cliente inválido
 try:
@@ -309,74 +401,144 @@ try:
         "correoincorrecto",
         "123"
     )
+
 except ValueError as error:
     print("\n2. Registro inválido controlado:", error)
 
+
 # OPERACIÓN 3: Creación de servicio de sala
 try:
-    sala = ReservaSala("S01", "Sala de reuniones", 50000)
-    print("\n3. Servicio creado:", sala.describir_servicio())
+    sala = ReservaSala(
+        "S01",
+        "Sala de reuniones",
+        50000
+    )
+
+    print(
+        "\n3. Servicio creado:",
+        sala.describir_servicio()
+    )
+
 except Exception as error:
     print("3. Error:", error)
 
+
 # OPERACIÓN 4: Creación de servicio de equipos
 try:
-    equipos = AlquilerEquipos("E01", "Alquiler de computadores", 30000)
-    print("\n4. Servicio creado:", equipos.describir_servicio())
+    equipos = AlquilerEquipos(
+        "E01",
+        "Alquiler de computadores",
+        30000
+    )
+
+    print(
+        "\n4. Servicio creado:",
+        equipos.describir_servicio()
+    )
+
 except Exception as error:
     print("4. Error:", error)
+
 
 # OPERACIÓN 5: Creación de servicio de asesoría
 try:
     asesoria = AsesoriaEspecializada(
-        "A01", "Asesoría informática", 80000
+        "A01",
+        "Asesoría informática",
+        80000
     )
-    print("\n5. Servicio creado:", asesoria.describir_servicio())
+
+    print(
+        "\n5. Servicio creado:",
+        asesoria.describir_servicio()
+    )
+
 except Exception as error:
     print("5. Error:", error)
+
 
 # OPERACIÓN 6: Intento de crear un servicio con precio inválido
 try:
     servicio_invalido = ReservaSala(
-        "S02", "Sala inválida", -5000
+        "S02",
+        "Sala inválida",
+        -5000
     )
+
 except ValueError as error:
     print("\n6. Servicio inválido controlado:", error)
+
 
 # OPERACIÓN 7: Cálculo del costo de un servicio
 try:
     costo = sala.calcular_costo(2)
-    print("\n7. Costo de reserva de sala por 2 horas: $", costo)
+
+    print(
+        "\n7. Costo de reserva de sala por 2 horas: $",
+        costo
+    )
+
 except Exception as error:
     print("7. Error:", error)
 
+
 # OPERACIÓN 8: Creación y procesamiento de una reserva
 try:
-    reserva1 = Reserva("R001", cliente1, sala, 2)
+    reserva1 = Reserva(
+        "R001",
+        cliente1,
+        sala,
+        2
+    )
+
     print("\n8. Reserva creada correctamente.")
+
     reserva1.procesar()
+
 except Exception as error:
     print("8. Error:", error)
 
+
 # OPERACIÓN 9: Intento de crear una reserva inválida
 try:
-    reserva_invalida = Reserva("R002", cliente1, sala, -3)
+    reserva_invalida = Reserva(
+        "R002",
+        cliente1,
+        sala,
+        -3
+    )
+
 except ReservaInvalidaError as error:
     print("\n9. Reserva inválida controlada:", error)
 
+
 # OPERACIÓN 10: Cancelación de una reserva pendiente
 try:
-    reserva2 = Reserva("R003", cliente1, equipos, 2)
+    reserva2 = Reserva(
+        "R003",
+        cliente1,
+        equipos,
+        2
+    )
+
     reserva2.cancelar()
+
     print("\n10. Reserva cancelada correctamente.")
+
 except Exception as error:
     print("10. Error:", error)
 
+
+# =====================================================
 # RESUMEN FINAL
+# =====================================================
+
 print("\n" + "=" * 55)
 print("PRUEBAS DEL SISTEMA FINALIZADAS")
 print("Se realizaron 10 operaciones de prueba.")
 print("Los errores controlados fueron registrados en los logs.")
 print("=" * 55)
 
-logging.info("Finalizaron las 10 operaciones de prueba.")
+logging.info(
+    "Finalizaron las 10 operaciones de prueba."
+)
