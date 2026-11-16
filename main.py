@@ -91,3 +91,77 @@ class Cliente(Entidad):
             f"Correo: {self.__correo}\n"
             f"Teléfono: {self.__telefono}"
         )
+
+# =====================================================
+# CLASE ABSTRACTA: SERVICIO
+# =====================================================
+
+class Servicio(ABC):
+    """Clase base para los servicios de Software FJ."""
+
+    def __init__(self, codigo, nombre, precio_base):
+        if not codigo or not nombre:
+            raise ValueError("El código y nombre son obligatorios.")
+
+        if not isinstance(precio_base, (int, float)) or precio_base <= 0:
+            raise ValueError("El precio debe ser mayor que cero.")
+
+        self.codigo = codigo
+        self.nombre = nombre
+        self.precio_base = precio_base
+
+    @abstractmethod
+    def calcular_costo(self, cantidad):
+        pass
+
+    @abstractmethod
+    def describir_servicio(self):
+        pass
+
+
+# =====================================================
+# SERVICIO 1: RESERVA DE SALAS
+# =====================================================
+
+class ReservaSala(Servicio):
+
+    def calcular_costo(self, cantidad):
+        if not isinstance(cantidad, (int, float)) or cantidad <= 0:
+            raise ValueError("La cantidad de horas debe ser positiva.")
+
+        return self.precio_base * cantidad
+
+    def describir_servicio(self):
+        return "Servicio de reserva de salas por horas."
+
+
+# =====================================================
+# SERVICIO 2: ALQUILER DE EQUIPOS
+# =====================================================
+
+class AlquilerEquipos(Servicio):
+
+    def calcular_costo(self, cantidad):
+        if not isinstance(cantidad, int) or cantidad <= 0:
+            raise ValueError("La cantidad de equipos debe ser un entero positivo.")
+
+        return self.precio_base * cantidad
+
+    def describir_servicio(self):
+        return "Servicio de alquiler de equipos tecnológicos."
+
+
+# =====================================================
+# SERVICIO 3: ASESORÍAS ESPECIALIZADAS
+# =====================================================
+
+class AsesoriaEspecializada(Servicio):
+
+    def calcular_costo(self, cantidad):
+        if not isinstance(cantidad, (int, float)) or cantidad <= 0:
+            raise ValueError("La duración de la asesoría debe ser positiva.")
+
+        return self.precio_base * cantidad
+
+    def describir_servicio(self):
+        return "Servicio de asesorías especializadas por horas."
