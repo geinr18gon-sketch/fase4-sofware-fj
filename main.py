@@ -380,6 +380,3 @@ print("Los errores controlados fueron registrados en los logs.")
 print("=" * 55)
 
 logging.info("Finalizaron las 10 operaciones de prueba.")
-
-    def describir_servicio(self):
-        return "Servicio de asesorías especializadas por horas."
