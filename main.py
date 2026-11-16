@@ -296,21 +296,18 @@ class SistemaGestion:
     def registrar_cliente(self, cliente):
         if not isinstance(cliente, Cliente):
             raise ValueError("El cliente no es válido.")
-
         self.clientes.append(cliente)
         logging.info("Cliente agregado al sistema.")
 
     def registrar_servicio(self, servicio):
         if not isinstance(servicio, Servicio):
             raise ValueError("El servicio no es válido.")
-
         self.servicios.append(servicio)
         logging.info("Servicio agregado: %s", servicio.codigo)
 
     def registrar_reserva(self, reserva):
         if not isinstance(reserva, Reserva):
             raise ValueError("La reserva no es válida.")
-
         self.reservas.append(reserva)
         logging.info("Reserva agregada: %s", reserva.codigo)
 
@@ -319,7 +316,6 @@ class SistemaGestion:
         print("Clientes registrados:", len(self.clientes))
         print("Servicios registrados:", len(self.servicios))
         print("Reservas registradas:", len(self.reservas))
-
 
 # =====================================================
 # PRUEBAS DE FUNCIONAMIENTO DEL SISTEMA
