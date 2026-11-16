@@ -283,7 +283,7 @@ class Reserva:
             )
 
 # =====================================================
-# CLASE PARA ADMINISTRAR EL SISTEMA
+# SISTEMA DE GESTIÓN
 # =====================================================
 
 class SistemaGestion:
